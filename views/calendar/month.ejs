@@ -1,0 +1,46 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h1 class="page-title">Calendar</h1>
+    <p class="page-sub"><%= monthName %> <%= year %></p>
+  </div>
+  <div class="cal-nav">
+    <a href="/calendar/day" class="btn-cal-view">Day</a>
+    <a href="/calendar/week" class="btn-cal-view">Week</a>
+    <a href="/calendar" class="btn-cal-view active">Month</a>
+  </div>
+</div>
+
+<div class="cal-month-nav">
+  <a href="/calendar?year=<%= prevYear %>&month=<%= prevMonth %>" class="btn-cal-arrow">‹</a>
+  <span class="cal-month-title"><%= monthName %> <%= year %></span>
+  <a href="/calendar?year=<%= nextYear %>&month=<%= nextMonth %>" class="btn-cal-arrow">›</a>
+</div>
+
+<div class="cal-month-grid">
+  <% ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => { %>
+    <div class="cal-day-header"><%= d %></div>
+  <% }) %>
+
+  <% days.forEach(day => { %>
+    <% if (!day) { %>
+      <div class="cal-day cal-day-empty"></div>
+    <% } else { %>
+      <% const key = day.toDateString(); %>
+      <% const isToday = day.toDateString() === today.toDateString(); %>
+      <% const dayTasks = taskMap[key] || []; %>
+      <div class="cal-day <%= isToday ? 'cal-today' : '' %>">
+        <span class="cal-day-num <%= isToday ? 'today-num' : '' %>"><%= day.getDate() %></span>
+        <div class="cal-day-tasks">
+          <% dayTasks.slice(0, 3).forEach(task => { %>
+            <div class="cal-task-pill priority-<%= task.priority %>" title="<%= task.title %>">
+              <%= task.title.substring(0, 18) %><%= task.title.length > 18 ? '…' : '' %>
+            </div>
+          <% }) %>
+          <% if (dayTasks.length > 3) { %>
+            <div class="cal-task-more">+<%= dayTasks.length - 3 %> more</div>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+  <% }) %>
+</div>

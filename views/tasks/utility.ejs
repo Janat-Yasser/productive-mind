@@ -1,0 +1,89 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h1 class="page-title">Utility Hub</h1>
+    <p class="page-sub">All your tasks in one place</p>
+  </div>
+  <a href="/tasks/add" class="btn-add">+ Add Task</a>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card"><span class="stat-num"><%= stats.total %></span><span class="stat-label">Total</span></div>
+  <div class="stat-card"><span class="stat-num"><%= stats.todo %></span><span class="stat-label">To Do</span></div>
+  <div class="stat-card accent"><span class="stat-num"><%= stats.inProgress %></span><span class="stat-label">In Progress</span></div>
+  <div class="stat-card green"><span class="stat-num"><%= stats.done %></span><span class="stat-label">Done</span></div>
+  <div class="stat-card red"><span class="stat-num"><%= stats.overdue %></span><span class="stat-label">Overdue</span></div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+  <form action="/tasks/utility" method="GET" class="filters-form">
+    <input type="text" name="search" value="<%= filters.search || '' %>" placeholder="Search tasks..." class="filter-search">
+    <select name="status" class="filter-select">
+      <option value="">All Status</option>
+      <option value="todo" <%= filters.status === 'todo' ? 'selected' : '' %>>To Do</option>
+      <option value="in-progress" <%= filters.status === 'in-progress' ? 'selected' : '' %>>In Progress</option>
+      <option value="done" <%= filters.status === 'done' ? 'selected' : '' %>>Done</option>
+    </select>
+    <select name="priority" class="filter-select">
+      <option value="">All Priority</option>
+      <option value="high" <%= filters.priority === 'high' ? 'selected' : '' %>>High</option>
+      <option value="medium" <%= filters.priority === 'medium' ? 'selected' : '' %>>Medium</option>
+      <option value="low" <%= filters.priority === 'low' ? 'selected' : '' %>>Low</option>
+    </select>
+    <select name="category" class="filter-select">
+      <option value="">All Categories</option>
+      <option value="personal" <%= filters.category === 'personal' ? 'selected' : '' %>>Personal</option>
+      <option value="work" <%= filters.category === 'work' ? 'selected' : '' %>>Work</option>
+      <option value="health" <%= filters.category === 'health' ? 'selected' : '' %>>Health</option>
+      <option value="learning" <%= filters.category === 'learning' ? 'selected' : '' %>>Learning</option>
+      <option value="finance" <%= filters.category === 'finance' ? 'selected' : '' %>>Finance</option>
+      <option value="other" <%= filters.category === 'other' ? 'selected' : '' %>>Other</option>
+    </select>
+    <button type="submit" class="btn-filter">Filter</button>
+    <a href="/tasks/utility" class="btn-clear">Clear</a>
+  </form>
+</div>
+
+<!-- Kanban-style board -->
+<div class="kanban-board">
+  <% ['todo','in-progress','done'].forEach(col => { %>
+    <% const labels = {todo:'To Do', 'in-progress':'In Progress', done:'Done'}; %>
+    <div class="kanban-col kanban-<%= col %>">
+      <div class="kanban-header">
+        <span class="kanban-title"><%= labels[col] %></span>
+        <span class="kanban-count"><%= tasks.filter(t => t.status === col).length %></span>
+      </div>
+      <div class="kanban-cards">
+        <% tasks.filter(t => t.status === col).forEach(task => { %>
+          <div class="kanban-card priority-border-<%= task.priority %>">
+            <div class="kanban-card-top">
+              <span class="task-cat cat-<%= task.category %>"><%= task.category %></span>
+              <span class="task-priority-dot priority-<%= task.priority %>"></span>
+            </div>
+            <p class="kanban-card-title"><%= task.title %></p>
+            <% if (task.description) { %>
+              <p class="kanban-card-desc"><%= task.description.substring(0, 80) %><%= task.description.length > 80 ? '...' : '' %></p>
+            <% } %>
+            <% if (task.dueDate) { %>
+              <span class="kanban-due <%= task.isOverdue ? 'overdue' : '' %>">
+                📅 <%= task.dueDate.toLocaleDateString('en-US',{month:'short',day:'numeric'}) %>
+                <%= task.isOverdue ? '⚠️' : '' %>
+              </span>
+            <% } %>
+            <div class="kanban-actions">
+              <a href="/tasks/<%= task._id %>/edit" class="btn-icon">✏️</a>
+              <form action="/tasks/<%= task._id %>?_method=DELETE" method="POST" style="display:inline"
+                    onsubmit="return confirm('Delete?')">
+                <button type="submit" class="btn-icon danger">🗑</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+        <% if (tasks.filter(t => t.status === col).length === 0) { %>
+          <div class="kanban-empty">No tasks here</div>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>

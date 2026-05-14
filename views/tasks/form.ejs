@@ -1,0 +1,110 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h1 class="page-title"><%= task ? 'Edit Task' : 'New Task' %></h1>
+    <p class="page-sub"><%= task ? 'Update your task details' : 'Add a new task to your list' %></p>
+  </div>
+  <a href="/tasks" class="btn-back">← Back</a>
+</div>
+
+<div class="form-card">
+  <form action="<%= action %>" method="POST" class="task-form">
+    <div class="form-row">
+      <div class="form-group form-group-lg">
+        <label for="title">Task Title *</label>
+        <input type="text" id="title" name="title" value="<%= task ? task.title : '' %>" 
+               placeholder="What needs to be done?" required class="input-lg">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="3" 
+                  placeholder="Add details or notes..."><%= task ? task.description : '' %></textarea>
+      </div>
+    </div>
+
+    <div class="form-row form-row-3">
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <select id="priority" name="priority">
+          <option value="low" <%= task && task.priority === 'low' ? 'selected' : '' %>>🟢 Low</option>
+          <option value="medium" <%= !task || task.priority === 'medium' ? 'selected' : '' %>>🟡 Medium</option>
+          <option value="high" <%= task && task.priority === 'high' ? 'selected' : '' %>>🔴 High</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option value="personal" <%= !task || task.category === 'personal' ? 'selected' : '' %>>Personal</option>
+          <option value="work" <%= task && task.category === 'work' ? 'selected' : '' %>>Work</option>
+          <option value="health" <%= task && task.category === 'health' ? 'selected' : '' %>>Health</option>
+          <option value="learning" <%= task && task.category === 'learning' ? 'selected' : '' %>>Learning</option>
+          <option value="finance" <%= task && task.category === 'finance' ? 'selected' : '' %>>Finance</option>
+          <option value="other" <%= task && task.category === 'other' ? 'selected' : '' %>>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="todo" <%= !task || task.status === 'todo' ? 'selected' : '' %>>To Do</option>
+          <option value="in-progress" <%= task && task.status === 'in-progress' ? 'selected' : '' %>>In Progress</option>
+          <option value="done" <%= task && task.status === 'done' ? 'selected' : '' %>>Done</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row form-row-2">
+      <div class="form-group">
+        <label for="dueDate">Due Date</label>
+        <input type="date" id="dueDate" name="dueDate" 
+               value="<%= task && task.dueDate ? task.dueDate.toISOString().split('T')[0] : '' %>">
+      </div>
+      <div class="form-group">
+        <label for="dueTime">Due Time</label>
+        <input type="time" id="dueTime" name="dueTime" value="<%= task ? task.dueTime : '' %>">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group form-group-full">
+        <label for="tags">Tags <span class="form-hint">(comma separated)</span></label>
+        <input type="text" id="tags" name="tags" 
+               value="<%= task && task.tags ? task.tags.join(', ') : '' %>" 
+               placeholder="work, urgent, meeting">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group recurring-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="isRecurring" id="isRecurring" 
+                 <%= task && task.isRecurring ? 'checked' : '' %> 
+                 onchange="toggleRecurring(this)">
+          <span>Recurring Task</span>
+        </label>
+        <div class="recurring-options" id="recurringOptions" 
+             style="display: <%= task && task.isRecurring ? 'block' : 'none' %>">
+          <select name="recurringPattern" id="recurringPattern">
+            <option value="daily" <%= task && task.recurringPattern === 'daily' ? 'selected' : '' %>>Daily</option>
+            <option value="weekly" <%= !task || task.recurringPattern === 'weekly' ? 'selected' : '' %>>Weekly</option>
+            <option value="monthly" <%= task && task.recurringPattern === 'monthly' ? 'selected' : '' %>>Monthly</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/tasks" class="btn-ghost">Cancel</a>
+      <button type="submit" class="btn-primary-yellow"><%= task ? 'Save Changes' : 'Create Task' %> →</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function toggleRecurring(cb) {
+  document.getElementById('recurringOptions').style.display = cb.checked ? 'block' : 'none';
+}
+</script>

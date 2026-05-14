@@ -1,0 +1,75 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h1 class="page-title">Today <span class="date-pill"><%= today.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'}) %></span></h1>
+    <p class="page-sub"><%= stats.done %> of <%= stats.total %> tasks complete</p>
+  </div>
+  <a href="/tasks/add" class="btn-add">+ Add Task</a>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar-wrap">
+  <div class="progress-bar" style="width: <%= stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0 %>%"></div>
+  <span class="progress-label"><%= stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0 %>%</span>
+</div>
+
+<!-- Stats row -->
+<div class="stats-row">
+  <div class="stat-card"><span class="stat-num"><%= stats.todo %></span><span class="stat-label">To Do</span></div>
+  <div class="stat-card accent"><span class="stat-num"><%= stats.inProgress %></span><span class="stat-label">In Progress</span></div>
+  <div class="stat-card green"><span class="stat-num"><%= stats.done %></span><span class="stat-label">Done</span></div>
+</div>
+
+<!-- Task list -->
+<div class="task-list" id="taskList">
+  <% if (tasks.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">🎉</div>
+      <p>No tasks for today. Add something to get started!</p>
+    </div>
+  <% } else { %>
+    <% ['high','medium','low'].forEach(p => { %>
+      <% const priorityTasks = tasks.filter(t => t.priority === p); %>
+      <% if (priorityTasks.length > 0) { %>
+        <div class="task-group">
+          <div class="task-group-label priority-<%= p %>"><%= p.charAt(0).toUpperCase() + p.slice(1) %> Priority</div>
+          <% priorityTasks.forEach(task => { %>
+            <div class="task-item <%= task.status %>" data-id="<%= task._id %>">
+              <div class="task-check-wrap">
+                <button class="task-check <%= task.status === 'done' ? 'checked' : '' %>" 
+                        onclick="toggleStatus('<%= task._id %>', '<%= task.status %>')">
+                  <%= task.status === 'done' ? '✓' : '' %>
+                </button>
+              </div>
+              <div class="task-body">
+                <span class="task-title <%= task.status === 'done' ? 'strikethrough' : '' %>"><%= task.title %></span>
+                <% if (task.description) { %>
+                  <span class="task-desc"><%= task.description %></span>
+                <% } %>
+                <div class="task-meta">
+                  <% if (task.dueTime) { %><span class="task-time">⏰ <%= task.dueTime %></span><% } %>
+                  <span class="task-cat cat-<%= task.category %>"><%= task.category %></span>
+                  <% if (task.isRecurring) { %><span class="task-recurring">🔁 <%= task.recurringPattern %></span><% } %>
+                  <% if (task.tags && task.tags.length) { %>
+                    <% task.tags.forEach(tag => { %><span class="task-tag">#<%= tag %></span><% }) %>
+                  <% } %>
+                </div>
+              </div>
+              <div class="task-actions">
+                <select class="status-select" onchange="changeStatus('<%= task._id %>', this.value)">
+                  <option value="todo" <%= task.status === 'todo' ? 'selected' : '' %>>To Do</option>
+                  <option value="in-progress" <%= task.status === 'in-progress' ? 'selected' : '' %>>In Progress</option>
+                  <option value="done" <%= task.status === 'done' ? 'selected' : '' %>>Done</option>
+                </select>
+                <a href="/tasks/<%= task._id %>/edit" class="btn-icon" title="Edit">✏️</a>
+                <form action="/tasks/<%= task._id %>?_method=DELETE" method="POST" style="display:inline" 
+                      onsubmit="return confirm('Delete this task?')">
+                  <button type="submit" class="btn-icon danger" title="Delete">🗑</button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    <% }) %>
+  <% } %>
+</div>

@@ -1,0 +1,52 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h1 class="page-title">Upcoming</h1>
+    <p class="page-sub">Your next 7 days at a glance</p>
+  </div>
+  <a href="/tasks/add" class="btn-add">+ Add Task</a>
+</div>
+
+<div class="upcoming-list">
+  <% const keys = Object.keys(grouped); %>
+  <% if (keys.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">📅</div>
+      <p>No upcoming tasks. You're all clear!</p>
+    </div>
+  <% } else { %>
+    <% keys.forEach(dateKey => { %>
+      <% const isToday = new Date(dateKey).toDateString() === today.toDateString(); %>
+      <div class="upcoming-group">
+        <div class="upcoming-date-header <%= isToday ? 'today-header' : '' %>">
+          <span class="upcoming-day"><%= isToday ? 'Today' : new Date(dateKey).toLocaleDateString('en-US',{weekday:'long'}) %></span>
+          <span class="upcoming-date-num"><%= dateKey === 'No Date' ? '—' : new Date(dateKey).toLocaleDateString('en-US',{month:'short', day:'numeric'}) %></span>
+        </div>
+        <% grouped[dateKey].forEach(task => { %>
+          <div class="task-item <%= task.status %>">
+            <div class="task-check-wrap">
+              <button class="task-check <%= task.status === 'done' ? 'checked' : '' %>"
+                      onclick="toggleStatus('<%= task._id %>', '<%= task.status %>')">
+                <%= task.status === 'done' ? '✓' : '' %>
+              </button>
+            </div>
+            <div class="task-body">
+              <span class="task-title <%= task.status === 'done' ? 'strikethrough' : '' %>"><%= task.title %></span>
+              <div class="task-meta">
+                <% if (task.dueTime) { %><span class="task-time">⏰ <%= task.dueTime %></span><% } %>
+                <span class="task-priority priority-<%= task.priority %>"><%= task.priority %></span>
+                <span class="task-cat cat-<%= task.category %>"><%= task.category %></span>
+              </div>
+            </div>
+            <div class="task-actions">
+              <a href="/tasks/<%= task._id %>/edit" class="btn-icon">✏️</a>
+              <form action="/tasks/<%= task._id %>?_method=DELETE" method="POST" style="display:inline"
+                    onsubmit="return confirm('Delete this task?')">
+                <button type="submit" class="btn-icon danger">🗑</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

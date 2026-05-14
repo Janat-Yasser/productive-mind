@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <div class="auth-left">
+    <a href="/" class="auth-logo">
+      <span>🌀</span>
+      <span>Productive Mind</span>
+    </a>
+    <div class="auth-fruit">
+      <div class="fruit-float">🌶</div>
+      <div class="fruit-float" style="animation-delay:.3s">🍋</div>
+      <div class="fruit-float" style="animation-delay:.7s">🍊</div>
+    </div>
+    <p class="auth-tagline">Start your journey.<br>One task at a time.</p>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-desc">Join thousands of productive minds.</p>
+
+      <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+        <% errors.forEach(e => { %>
+          <div class="flash flash-error"><%= e.msg %></div>
+        <% }) %>
+      <% } %>
+
+      <form action="/auth/signup" method="POST" class="auth-form">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" value="<%= typeof name !== 'undefined' ? name : '' %>" placeholder="Your Name" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" value="<%= typeof email !== 'undefined' ? email : '' %>" placeholder="you@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
+        </div>
+        <div class="form-group">
+          <label for="password2">Confirm Password</label>
+          <input type="password" id="password2" name="password2" placeholder="Repeat password" required>
+        </div>
+        <button type="submit" class="btn-primary-yellow btn-full">Create Account →</button>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="/auth/signin">Sign in</a></p>
+    </div>
+  </div>
+</div>
